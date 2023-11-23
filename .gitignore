@@ -1,0 +1,46 @@
+# Arquivo .gitignore
+
+# Dependências
+/node_modules
+/bower_components
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Diretórios de configuração do IDE/editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Arquivos de build e compilação
+/dist
+/tmp
+/out
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Diretório de cache (ex: usado pelo Babel)
+.cache
+.next
+
+# Outros
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+*~
+*.lock
+*.sock
