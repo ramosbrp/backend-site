@@ -6,14 +6,22 @@ const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
 
-app.use(cors({
-    origin: ['https://ramos-dev.com', 'http://127.0.0.1:5500'], // Ou um array de domínios permitidos
-    methods: ['GET', 'POST'], // Métodos HTTP permitidos
-    allowedHeaders: ['Content-Type'] // Headers permitidos
-}));
+app.use(cors());
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Header',
+        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
 
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+        return res.status(200).send({});
+    }
+
+    next();
+});
 
 
 app.post('/send-email', (req, res) => {
@@ -75,12 +83,15 @@ app.post('/submit-comment', (req, res) => {
     const query = `INSERT INTO comentarios (comentario, data, nome, post_id) VALUES (?, ?, ?, ?)`;
 
     connection.query(query, [comment, data, name, post_id], (error, results) => {
-        if (error) throw error;
-        console.log('Comentario adicionado com sucesso. ID:', results.insertId);
+        if (error) {
+            console.log(error);
+            res.status(500).send('Erro ao salvar comentário.');
+        } else{
+            console.log('Comentario adicionado com sucesso. ID:', results.insertId);
+            res.status(200).send('Comentário adicionado com sucesso.');
+
+        }
     })
-
-    connection.end();
-
 })
 
 const PORT = process.env.PORT || 3000;
