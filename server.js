@@ -50,7 +50,8 @@ app.post('/send-email', (req, res) => {
 
 app.post('/submit-comment', (req, res) => {
     const { name, comment } = req.body;
-
+    console.log(name);
+    console.log(comment);
     const connection = mysql.createConnection({
         host: process.env.BD_HOST,
         user: process.env.BD_USER,
@@ -79,7 +80,6 @@ app.post('/submit-comment', (req, res) => {
     })
 
     connection.end();
-    // Usar 'connection' para interagir com o banco de dados
 
 })
 
