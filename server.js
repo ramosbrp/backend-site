@@ -6,22 +6,28 @@ const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
 
-app.use(cors());
+app.use(cors({
+    origin: ['https://ramos-dev.com', 'http://127.0.0.1:5500'], // Ou um array de domínios permitidos
+    methods: ['GET', 'POST'], // Métodos HTTP permitidos
+    allowedHeaders: ['Content-Type'] // Headers permitidos
+}));
 app.use(bodyParser.json());
 
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST, // Substitua pelo host SMTP.
-    port: process.env.EMAIL_PORT, // Use 465 para SSL ou 587 para TLS.
-    secure: true, // true para 465, false para outras portas.
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+
 
 
 app.post('/send-email', (req, res) => {
     const { email, name, message } = req.body;
+
+    const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST, // Substitua pelo host SMTP.
+        port: process.env.EMAIL_PORT, // Use 465 para SSL ou 587 para TLS.
+        secure: true, // true para 465, false para outras portas.
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
 
     const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -43,9 +49,8 @@ app.post('/send-email', (req, res) => {
 });
 
 app.post('/submit-comment', (req, res) => {
-    const {name, comment} = req.body;
-    console.log(name);
-    console.log(comment);
+    const { name, comment } = req.body;
+
     const connection = mysql.createConnection({
         host: process.env.BD_HOST,
         user: process.env.BD_USER,
@@ -56,6 +61,7 @@ app.post('/submit-comment', (req, res) => {
     connection.connect(err => {
         if (err) {
             console.error('Erro ao conectar: ' + err.stack);
+            res.status(500).json({ message: 'Erro ao conectar ao banco de dados.' });
             return;
         }
 
@@ -72,6 +78,7 @@ app.post('/submit-comment', (req, res) => {
         console.log('Comentario adicionado com sucesso. ID:', results.insertId);
     })
 
+    connection.end();
     // Usar 'connection' para interagir com o banco de dados
 
 })
