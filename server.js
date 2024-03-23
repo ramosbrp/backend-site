@@ -10,12 +10,12 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST, // Substitua pelo host SMTP da Hostinger.
+    host: process.env.EMAIL_HOST, // Substitua pelo host SMTP.
     port: process.env.EMAIL_PORT, // Use 465 para SSL ou 587 para TLS.
     secure: true, // true para 465, false para outras portas.
     auth: {
-        user: process.env.EMAIL_USER, // Seu e-mail Hostinger.
-        pass: process.env.EMAIL_PASS // Sua senha do e-mail Hostinger.
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -43,14 +43,14 @@ app.post('/send-email', (req, res) => {
 });
 
 app.post('/submit-comment', (req, res) => {
-    console.log('ok')
-
-
-    const connection =  mysql.createConnection({
-        host: process.env.BD_HOST, 
-        user: process.env.BD_USER, 
-        password: process.env.BD_PASS, 
-        database: process.env.BD_DATABASE 
+    const {name, comment} = req.body;
+    console.log(name);
+    console.log(comment);
+    const connection = mysql.createConnection({
+        host: process.env.BD_HOST,
+        user: process.env.BD_USER,
+        password: process.env.BD_PASS,
+        database: process.env.BD_DATABASE
     });
 
     connection.connect(err => {
@@ -61,6 +61,16 @@ app.post('/submit-comment', (req, res) => {
 
         console.log('Conectado como ID ' + connection.threadId);
     });
+
+    const data = new Date();
+    const post_id = 1;
+
+    const query = `INSERT INTO comentarios (comentario, data, nome, post_id) VALUES (?, ?, ?, ?)`;
+
+    connection.query(query, [comment, data, name, post_id], (error, results) => {
+        if (error) throw error;
+        console.log('Comentario adicionado com sucesso. ID:', results.insertId);
+    })
 
     // Usar 'connection' para interagir com o banco de dados
 
