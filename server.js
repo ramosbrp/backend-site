@@ -94,7 +94,7 @@ app.post('/submit-comment', (req, res) => {
                 post_id: post_id
             }
             console.log('Comentario adicionado com sucesso. ID:', results.insertID);
-            res.status(200).send(ComentarioInserido);
+            res.status(200).send({ ComentarioInserido, message: 'Comentário adicionado com sucesso!' });
 
         }
     })
@@ -132,7 +132,7 @@ app.get('/get-comments', (req, res) => {
             return;
         }
         console.log('Comentários recuperados com sucesso.');
-        res.status(200).json(results);
+        res.status(200).json({ results, message: 'Comentários recuperados com sucesso!' });
     });
 
     connection.end();
