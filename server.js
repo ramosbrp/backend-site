@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Header',
+    res.header('Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept, Authorization'
     );
 
@@ -58,8 +58,7 @@ app.post('/send-email', (req, res) => {
 
 app.post('/submit-comment', (req, res) => {
     const { name, comment } = req.body;
-    console.log(name);
-    console.log(comment);
+
     const connection = mysql.createConnection({
         host: process.env.BD_HOST,
         user: process.env.BD_USER,
@@ -86,13 +85,61 @@ app.post('/submit-comment', (req, res) => {
         if (error) {
             console.log(error);
             res.status(500).send('Erro ao salvar comentário.');
-        } else{
-            console.log('Comentario adicionado com sucesso. ID:', results.insertId);
-            res.status(200).send('Comentário adicionado com sucesso.');
+        } else {
+
+            const ComentarioInserido = {
+                id: results.insertID,
+                comentario: comment,
+                nome: name,
+                post_id: post_id
+            }
+            console.log('Comentario adicionado com sucesso. ID:', results.insertID);
+            res.status(200).send(ComentarioInserido);
 
         }
     })
+
+    connection.end();
 })
+
+app.get('/get-comments', (req, res) => {
+
+    const post_id = req.query.post_id;
+    parseInt(post_id);
+    const connection = mysql.createConnection({
+        host: process.env.BD_HOST,
+        user: process.env.BD_USER,
+        password: process.env.BD_PASS,
+        database: process.env.BD_DATABASE
+    });
+
+    connection.connect(err => {
+        if (err) {
+            console.error('Erro ao conectar: ' + err.stack);
+            res.status(500).json({ message: 'Erro ao conectar ao banco de dados.' });
+            return;
+        }
+
+        console.log('Conectado como ID ' + connection.threadId);
+    });
+
+    const query = `SELECT * FROM comentarios WHERE post_id = ?`;
+
+    connection.query(query, [post_id], (error, results) => {
+        if (error) {
+            console.error('Erro ao buscar comentários:', error);
+            res.status(500).json({ message: 'Erro ao buscar comentário.' });
+            return;
+        }
+        console.log('Comentários recuperados com sucesso.');
+        res.status(200).json(results);
+    });
+
+    connection.end();
+
+
+
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
