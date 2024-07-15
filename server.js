@@ -5,9 +5,12 @@ require('dotenv').config();
 const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
+const path = require('path');
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, '../frontend')))
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -23,6 +26,13 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/', (req, res)=>{
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'))    
+});
+
+app.get('*', (req, res)=>{
+    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+});
 
 app.post('/send-email', (req, res) => {
     const { email, name, message } = req.body;
@@ -140,6 +150,8 @@ app.get('/get-comments', (req, res) => {
 
 
 });
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
