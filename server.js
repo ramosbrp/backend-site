@@ -5,10 +5,13 @@ require('dotenv').config();
 const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
+const path = require('path');
 
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use(express.static(path.join(__dirname, '../frontend')))
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers',
@@ -23,6 +26,13 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'))
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+});
 
 app.post('/send-email', (req, res) => {
     const { email, name, message } = req.body;
@@ -39,9 +49,9 @@ app.post('/send-email', (req, res) => {
 
     const mailOptions = {
         from: process.env.EMAIL_USER,
-        replyTo: email, // O e-mail do remetente.
         to: process.env.EMAIL_USER, // O destinatário do e-mail.
-        subject: `Mensage de ${name}`,
+        subject: `Ramos Dev Contato - Mensagem de ${name}`,
+        replyTo: email, // O e-mail do remetente.
         text: message
     };
 
@@ -100,7 +110,7 @@ app.post('/submit-comment', (req, res) => {
     })
 
     connection.end();
-})
+});
 
 app.get('/get-comments', (req, res) => {
 
@@ -141,7 +151,9 @@ app.get('/get-comments', (req, res) => {
 
 });
 
-const PORT = process.env.PORT || 3000;
+
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
