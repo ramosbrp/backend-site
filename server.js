@@ -7,7 +7,7 @@ const app = express();
 const mysql = require('mysql');
 const path = require('path');
 
-app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(cors({ origin: ['http://localhost:4200', process.env.FRONTEND] }));
 app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, '../site-v2.0/landing-ramos-dev-angular/src/')))
