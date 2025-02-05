@@ -7,10 +7,10 @@ const app = express();
 const mysql = require('mysql');
 const path = require('path');
 
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:4200' }));
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname, '../frontend')))
+app.use(express.static(path.join(__dirname, '../site-v2.0/landing-ramos-dev-angular/src/')))
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -26,15 +26,16 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'))
+app.get('/api/dados', (req, res) => {
+    res.json({ message: 'Backend conectado ao Angular!' });
+    // res.sendFile(path.join(__dirname, 'frontend', 'index.html'))
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
-});
+// app.get('*', (req, res) => {
+// res.sendFile(path.join(__dirname, '../site-v2.0/landing-ramos-dev-angular/src/', 'index.html'));
+// });
 
-app.post('/send-email', (req, res) => {
+app.post('/api/send-email', (req, res) => {
     const { email, name, message } = req.body;
 
     const transporter = nodemailer.createTransport({
@@ -58,7 +59,7 @@ app.post('/send-email', (req, res) => {
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
-            res.status(500).send('Erro ao enviar e-mail.');
+            res.status(500).send('Erro ao enviar e-mail.', error);
         } else {
             console.log('Email enviado: ' + info.response);
             res.status(200).send('E-mail enviado com sucesso.');
