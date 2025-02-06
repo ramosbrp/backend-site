@@ -7,7 +7,7 @@ const app = express();
 const mysql = require('mysql');
 const path = require('path');
 
-app.use(cors({ origin: ['http://localhost:4200', process.env.FRONTEND] }));
+app.use(cors());
 app.use(bodyParser.json());
 
 
