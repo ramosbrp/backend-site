@@ -10,7 +10,10 @@ const path = require('path');
 app.use(cors({ origin: ['http://localhost:4200', process.env.FRONTEND] }));
 app.use(bodyParser.json());
 
+
 app.use(express.static(path.join(__dirname, '../site-v2.0/landing-ramos-dev-angular/src/')))
+
+
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -25,6 +28,7 @@ app.use((req, res, next) => {
 
     next();
 });
+
 
 app.get('/api/dados', (req, res) => {
     res.json({ message: 'Backend conectado ao Angular!' });
