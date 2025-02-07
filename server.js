@@ -11,9 +11,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 
-app.use(express.static(path.join(__dirname, '../site-v2.0/landing-ramos-dev-angular/src/')))
-
-
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -30,14 +27,12 @@ app.use((req, res, next) => {
 });
 
 
-app.get('/api/dados', (req, res) => {
-    res.json({ message: 'Backend conectado ao Angular!' });
-    // res.sendFile(path.join(__dirname, 'frontend', 'index.html'))
+app.post('/api/send-data', (req, res) => {
+    const { data } = req.body
+
+    return res.status(200).json({ success: true, message: 'Dados enviados com sucesso!' });
 });
 
-// app.get('*', (req, res) => {
-// res.sendFile(path.join(__dirname, '../site-v2.0/landing-ramos-dev-angular/src/', 'index.html'));
-// });
 
 app.post('/api/send-email', (req, res) => {
     const { email, name, message } = req.body;
